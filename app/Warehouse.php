@@ -99,11 +99,4 @@ class Warehouse
         return $this->products[$id] ?? null;
     }
 
-    public function updateDatabase(string $status): void
-    {
-        $this->logger->info("Database updated", [
-            'status' => $status,
-            'user' => $this->user,
-        ]);
-    }
 }

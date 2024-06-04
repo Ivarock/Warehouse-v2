@@ -72,8 +72,7 @@ while (true) {
     echo "3. Add amount to existing product\n";
     echo "4. Withdraw amount from existing product\n";
     echo "5. Delete product from stock\n";
-    echo "6. Update database status\n";
-    echo "7. Exit\n";
+    echo "6. Exit\n";
     $choice = (int)readline("Enter your choice: ");
 
     switch ($choice) {
@@ -133,11 +132,6 @@ while (true) {
             echo "\nProduct deleted successfully.\n";
             break;
         case 6:
-            $status = readline("Enter new status: ");
-            $warehouse->updateDatabase($status);
-            echo "\nDatabase status updated successfully.\n";
-            break;
-        case 7:
             exit;
         default:
             echo "\nInvalid choice.\n";
