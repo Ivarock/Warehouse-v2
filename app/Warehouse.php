@@ -2,7 +2,6 @@
 
 namespace Warehouse;
 
-use InvalidArgumentException;
 use Monolog\Logger;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
@@ -45,16 +44,12 @@ class Warehouse
         $data = array_map(function (Product $product) {
             return $product->jsonSerialize();
         }, $this->products);
-
         $filePath = __DIR__ . "/data/{$this->user}_products.json";
         file_put_contents($filePath, json_encode($data, JSON_PRETTY_PRINT));
     }
 
     public function addProduct(int $id, string $name, int $amount): void
     {
-        if (isset($this->products[$id])) {
-            throw new InvalidArgumentException("Product with ID $id already exists.");
-        }
         $product = new Product($id, $name, $amount);
         $this->products[$id] = $product;
         $this->saveProducts();
@@ -68,9 +63,6 @@ class Warehouse
 
     public function updateProduct(int $id, int $amount, string $action): void
     {
-        if (isset($this->products[$id]) === false) {
-            throw new InvalidArgumentException("Product with ID $id does not exist.");
-        }
         $product = $this->products[$id];
         if ($action === 'add') {
             $product->addAmount($amount);
@@ -89,10 +81,6 @@ class Warehouse
 
     public function deleteProduct(int $id): void
     {
-        if (!isset($this->products[$id])) {
-            throw new InvalidArgumentException("Product with ID $id does not exist.");
-        }
-
         unset($this->products[$id]);
         $this->saveProducts();
         $this->logger->info("Product deleted", [
@@ -112,5 +100,10 @@ class Warehouse
             'status' => $status,
             'user' => $this->user,
         ]);
+    }
+
+    public function getProduct(int $id): ?Product
+    {
+        return $this->products[$id] ?? null;
     }
 }

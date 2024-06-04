@@ -2,8 +2,6 @@
 
 namespace Warehouse;
 
-use InvalidArgumentException;
-
 class User
 {
     private array $users = [];
@@ -37,9 +35,6 @@ class User
 
     public function register(string $username, string $password): void
     {
-        if (isset($this->users[$username])) {
-            throw new InvalidArgumentException("Username already exists.");
-        }
         $this->users[$username] = $password;
         $this->saveUser();
     }

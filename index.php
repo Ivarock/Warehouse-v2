@@ -20,24 +20,28 @@ switch ($choice) {
         $username = readline("Enter your username: ");
         $password = readline("Enter your password: ");
         if ($user->authorize($username, $password) === false) {
-            echo "Invalid username or password. Exiting.\n";
+            echo "\nInvalid username or password. Exiting.\n";
             exit;
         }
         break;
     case 2:
         $username = readline("Enter your username: ");
         $password = readline("Enter your password: ");
+        if ($user->authorize($username, $password) === true) {
+            echo "\nUser already exists. Exiting.\n";
+            exit;
+        }
         $user->register($username, $password);
-        echo "Registration successful. Please log in.\n";
+        echo "\nRegistration successful. Please log in.\n";
         $username = readline("Enter your username: ");
         $password = readline("Enter your password: ");
         if ($user->authorize($username, $password) === false) {
-            echo "Invalid username or password. Exiting.\n";
+            echo "\nInvalid username or password. Exiting.\n";
             exit;
         }
         break;
     default:
-        echo "Invalid choice. Exiting.\n";
+        echo "\nInvalid choice. Exiting.\n";
         exit;
 }
 
@@ -80,35 +84,63 @@ while (true) {
             $id = (int)readline("Enter product ID: ");
             $name = readline("Enter product name: ");
             $amount = (int)readline("Enter product amount: ");
+            if ($warehouse->getProduct($id) !== null) {
+                echo "\nProduct already exists.\n";
+                break;
+            }
             $warehouse->addProduct($id, $name, $amount);
-            echo "Product added successfully.\n";
+            echo "\nProduct added successfully.\n";
             break;
         case 3:
             $id = (int)readline("Enter product ID: ");
             $amount = (int)readline("Enter amount you want to add: ");
+            if ($warehouse->getProduct($id) === null) {
+                echo "\nProduct does not exist.\n";
+                break;
+            }
+            if ($amount <= 0) {
+                echo "\nInvalid amount. Please enter a positive number.\n";
+                break;
+            }
             $warehouse->updateProduct($id, $amount, 'add');
-            echo "Product updated successfully.\n";
+            echo "\nProduct updated successfully.\n";
             break;
         case 4:
             $id = (int)readline("Enter product ID: ");
             $amount = (int)readline("Enter amount you want to withdraw: ");
+            if ($warehouse->getProduct($id) === null) {
+                echo "\nProduct does not exist.\n";
+                break;
+            }
+            if ($amount <= 0) {
+                echo "\nInvalid amount. Please enter a positive number.\n";
+                break;
+            }
+            if ($warehouse->getProduct($id)->getAmount() < $amount) {
+                echo "\nAmount to remove exceeds current stock.\n";
+                break;
+            }
             $warehouse->updateProduct($id, $amount, 'withdraw');
-            echo "Product updated successfully.\n";
+            echo "\nProduct updated successfully.\n";
             break;
         case 5:
             $id = (int)readline("Enter product ID: ");
+            if ($warehouse->getProduct($id) === null) {
+                echo "\nProduct does not exist.\n";
+                break;
+            }
             $warehouse->deleteProduct($id);
-            echo "Product deleted successfully.\n";
+            echo "\nProduct deleted successfully.\n";
             break;
         case 6:
             $status = readline("Enter new status: ");
             $warehouse->updateDatabase($status);
-            echo "Database status updated successfully.\n";
+            echo "\nDatabase status updated successfully.\n";
             break;
         case 7:
             exit;
         default:
-            echo "Invalid choice.\n";
+            echo "\nInvalid choice.\n";
             break;
     }
 }

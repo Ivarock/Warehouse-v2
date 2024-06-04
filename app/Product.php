@@ -3,7 +3,6 @@
 namespace Warehouse;
 
 use Carbon\Carbon;
-use InvalidArgumentException;
 use JsonSerializable;
 
 class Product implements JsonSerializable
@@ -45,18 +44,12 @@ class Product implements JsonSerializable
 
     public function withdrawAmount(int $amount): void
     {
-        if ($amount > $this->amount) {
-            throw new InvalidArgumentException('Amount to withdraw exceeds available amount.');
-        }
         $this->amount -= $amount;
         $this->updatedAt = Carbon::now();
     }
 
     public function addAmount(int $amount): void
     {
-        if ($amount < 0) {
-            throw new InvalidArgumentException('Amount must be a positive number.');
-        }
         $this->amount += $amount;
         $this->updatedAt = Carbon::now();
     }
@@ -84,13 +77,6 @@ class Product implements JsonSerializable
 
     public static function fromJson(array $data): self
     {
-        $requiredKeys = ['id', 'name', 'amount', 'createdAt', 'updatedAt'];
-        foreach ($requiredKeys as $key) {
-            if (array_key_exists($key, $data) == false) {
-                throw new InvalidArgumentException("Product '$key' does not exist.");
-            }
-        }
-
         return new self(
             $data['id'],
             $data['name'],
