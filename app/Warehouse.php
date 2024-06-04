@@ -48,7 +48,7 @@ class Warehouse
         file_put_contents($filePath, json_encode($data, JSON_PRETTY_PRINT));
     }
 
-    public function addProduct(int $id, string $name, int $amount): void
+    public function createProduct(int $id, string $name, int $amount): void
     {
         $product = new Product($id, $name, $amount);
         $this->products[$id] = $product;
@@ -94,16 +94,16 @@ class Warehouse
         return $this->products;
     }
 
+    public function getProduct(int $id): ?Product
+    {
+        return $this->products[$id] ?? null;
+    }
+
     public function updateDatabase(string $status): void
     {
         $this->logger->info("Database updated", [
             'status' => $status,
             'user' => $this->user,
         ]);
-    }
-
-    public function getProduct(int $id): ?Product
-    {
-        return $this->products[$id] ?? null;
     }
 }

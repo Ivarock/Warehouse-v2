@@ -88,7 +88,7 @@ while (true) {
                 echo "\nProduct already exists.\n";
                 break;
             }
-            $warehouse->addProduct($id, $name, $amount);
+            $warehouse->createProduct($id, $name, $amount);
             echo "\nProduct added successfully.\n";
             break;
         case 3:

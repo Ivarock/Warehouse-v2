@@ -42,15 +42,15 @@ class Product implements JsonSerializable
         return $this->amount;
     }
 
-    public function withdrawAmount(int $amount): void
-    {
-        $this->amount -= $amount;
-        $this->updatedAt = Carbon::now();
-    }
-
     public function addAmount(int $amount): void
     {
         $this->amount += $amount;
+        $this->updatedAt = Carbon::now();
+    }
+
+    public function withdrawAmount(int $amount): void
+    {
+        $this->amount -= $amount;
         $this->updatedAt = Carbon::now();
     }
 

@@ -13,14 +13,10 @@ class User
         $this->loadUser();
     }
 
-    private function loadUser(): void
+    public function register(string $username, string $password): void
     {
-        if (file_exists($this->filePath)) {
-            $data = json_decode(file_get_contents($this->filePath), true);
-            if ($data !== null) {
-                $this->users = $data;
-            }
-        }
+        $this->users[$username] = $password;
+        $this->saveUser();
     }
 
     private function saveUser(): void
@@ -33,9 +29,16 @@ class User
         return isset($this->users[$username]) && $this->users[$username] === $password;
     }
 
-    public function register(string $username, string $password): void
+    private function loadUser(): void
     {
-        $this->users[$username] = $password;
-        $this->saveUser();
+        if (file_exists($this->filePath)) {
+            $data = json_decode(file_get_contents($this->filePath), true);
+            if ($data !== null) {
+                $this->users = $data;
+            }
+        }
     }
+
+
+
 }
