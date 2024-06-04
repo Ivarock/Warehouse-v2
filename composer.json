@@ -1,0 +1,14 @@
+{
+  "require": {
+    "symfony/console": "^5.2",
+    "nesbot/carbon": "^2.41",
+    "monolog/monolog": "^2.2",
+    "ext-json": "*",
+    "ext-readline": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Warehouse\\": "app/"
+    }
+  }
+}
