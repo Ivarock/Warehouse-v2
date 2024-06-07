@@ -1,33 +1,40 @@
 <?php
 
-namespace Warehouse;
+namespace Warehouse\Models;
 
 use Carbon\Carbon;
 use JsonSerializable;
+use Ramsey\Uuid\Uuid;
 
 class Product implements JsonSerializable
 {
-    private int $id;
+    private string $id;
     private string $name;
     private int $amount;
-    private Carbon $createdAt;
-    private Carbon $updatedAt;
+    private float $price;
+    private ?string $expirationDate;
+    private ?Carbon $createdAt;
+    private ?Carbon $updatedAt;
 
     public function __construct(
-        int $id,
         string $name,
         int $amount,
+        float $price,
+        string $id,
+        ?string $expirationDate,
         ?Carbon $createdAt = null,
         ?Carbon $updatedAt = null
     ) {
         $this->id = $id;
         $this->name = $name;
         $this->amount = $amount;
+        $this->price = $price;
+        $this->expirationDate = $expirationDate;
         $this->createdAt = $createdAt ?? Carbon::now();
         $this->updatedAt = $updatedAt ?? Carbon::now();
     }
 
-    public function getId(): int
+    public function getId(): string
     {
         return $this->id;
     }
@@ -42,16 +49,14 @@ class Product implements JsonSerializable
         return $this->amount;
     }
 
-    public function addAmount(int $amount): void
+    public function getPrice(): float
     {
-        $this->amount += $amount;
-        $this->updatedAt = Carbon::now();
+        return $this->price;
     }
 
-    public function withdrawAmount(int $amount): void
+    public function getExpirationDate(): ?string
     {
-        $this->amount -= $amount;
-        $this->updatedAt = Carbon::now();
+        return $this->expirationDate;
     }
 
     public function getCreatedAt(): string
@@ -64,26 +69,41 @@ class Product implements JsonSerializable
         return $this->updatedAt->toDateTimeString();
     }
 
+    public function setId(string $id): void
+    {
+        $this->id = $id;
+        $this->updatedAt = Carbon::now();
+    }
+
+    public function setAmount(int $amount): void
+    {
+        $this->amount = $amount;
+        $this->updatedAt = Carbon::now();
+    }
+
     public function jsonSerialize(): array
     {
         return [
             'id' => $this->id,
             'name' => $this->name,
             'amount' => $this->amount,
+            'price' => $this->price,
+            'expirationDate' => $this->expirationDate,
             'createdAt' => $this->createdAt->toDateTimeString(),
             'updatedAt' => $this->updatedAt->toDateTimeString(),
         ];
     }
 
-    public static function fromJson(array $data): self
+    public static function unserialize($data): self
     {
         return new self(
-            $data['id'],
-            $data['name'],
-            $data['amount'],
-            new Carbon($data['createdAt']),
-            new Carbon($data['updatedAt'])
+            $data->name,
+            $data->amount,
+            $data->price,
+            $data->id,
+            $data->expirationDate,
+            new Carbon($data->createdAt),
+            new Carbon($data->updatedAt)
         );
     }
 }
-

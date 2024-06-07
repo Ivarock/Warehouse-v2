@@ -2,10 +2,10 @@
 
 require 'vendor/autoload.php';
 
-use Warehouse\Warehouse;
-use Warehouse\User;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\ConsoleOutput;
+use Warehouse\Models\User;
+use Warehouse\Services\Warehouse;
 
 
 $user = new User();
@@ -52,12 +52,14 @@ function displayProducts(Warehouse $warehouse): void
 {
     $output = new ConsoleOutput();
     $table = new Table($output);
-    $table->setHeaders(['ID', 'Name', 'Quantity', 'Created at', 'Updated at']);
+    $table->setHeaders(['ID', 'Name', 'Quantity', 'Price', 'Expiration date', 'Created at', 'Updated at']);
     foreach ($warehouse->getProducts() as $product) {
         $table->addRow([
             $product->getId(),
             $product->getName(),
             $product->getAmount(),
+            $product->getPrice(),
+            $product->getExpirationDate(),
             $product->getCreatedAt(),
             $product->getUpdatedAt(),
         ]);
@@ -72,7 +74,9 @@ while (true) {
     echo "3. Add amount to existing product\n";
     echo "4. Withdraw amount from existing product\n";
     echo "5. Delete product from stock\n";
-    echo "6. Exit\n";
+    echo "6. Get product report\n";
+    echo "7. Update product ID's\n";
+    echo "8. Exit\n";
     $choice = (int)readline("Enter your choice: ");
 
     switch ($choice) {
@@ -80,37 +84,34 @@ while (true) {
             displayProducts($warehouse);
             break;
         case 2:
-            $id = (int)readline("Enter product ID: ");
             $name = readline("Enter product name: ");
             $amount = (int)readline("Enter product amount: ");
-            if ($warehouse->getProduct($id) !== null) {
-                echo "\nProduct already exists.\n";
-                break;
-            }
-            $warehouse->createProduct($id, $name, $amount);
-            echo "\nProduct added successfully.\n";
-            break;
-        case 3:
-            $id = (int)readline("Enter product ID: ");
-            $amount = (int)readline("Enter amount you want to add: ");
-            if ($warehouse->getProduct($id) === null) {
-                echo "\nProduct does not exist.\n";
-                break;
-            }
             if ($amount <= 0) {
                 echo "\nInvalid amount. Please enter a positive number.\n";
                 break;
             }
-            $warehouse->updateProduct($id, $amount, 'add');
+            $price = (float)readline("Enter product price: ");
+            if ($price <= 0) {
+                echo "\nInvalid price. Please enter a positive number.\n";
+                break;
+            }
+            $expirationDate = readline("Enter product expiration date (DD-MM-YYYY): ");
+            $warehouse->createProduct($name, $amount, $price, $expirationDate);
+            echo "\nProduct added successfully.\n";
+            break;
+        case 3:
+            $id = readline("Enter product ID: ");
+            $amount = (int)readline("Enter amount you want to add: ");
+            if ($amount <= 0) {
+                echo "\nInvalid amount. Please enter a positive number.\n";
+                break;
+            }
+            $warehouse->addAmount($id, $amount);
             echo "\nProduct updated successfully.\n";
             break;
         case 4:
-            $id = (int)readline("Enter product ID: ");
+            $id = readline("Enter product ID: ");
             $amount = (int)readline("Enter amount you want to withdraw: ");
-            if ($warehouse->getProduct($id) === null) {
-                echo "\nProduct does not exist.\n";
-                break;
-            }
             if ($amount <= 0) {
                 echo "\nInvalid amount. Please enter a positive number.\n";
                 break;
@@ -119,19 +120,25 @@ while (true) {
                 echo "\nAmount to remove exceeds current stock.\n";
                 break;
             }
-            $warehouse->updateProduct($id, $amount, 'withdraw');
+            $warehouse->withdrawAmount($id, $amount);
             echo "\nProduct updated successfully.\n";
             break;
         case 5:
-            $id = (int)readline("Enter product ID: ");
-            if ($warehouse->getProduct($id) === null) {
-                echo "\nProduct does not exist.\n";
-                break;
-            }
+            $id = readline("Enter product ID: ");
             $warehouse->deleteProduct($id);
             echo "\nProduct deleted successfully.\n";
             break;
         case 6:
+            $report = $warehouse->getReport();
+            echo "\nTotal products: {$report['totalProducts']}\n";
+            echo "Total value: $ {$report['totalValue']}\n";
+            break;
+        case 7:
+            $warehouse->updateProductId();
+            echo "\nProduct ID's updated successfully.\n";
+            break;
+        case 8:
+            echo "\nExiting...\n";
             exit;
         default:
             echo "\nInvalid choice.\n";

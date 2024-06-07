@@ -4,11 +4,12 @@
     "nesbot/carbon": "^2.41",
     "monolog/monolog": "^2.2",
     "ext-json": "*",
-    "ext-readline": "*"
+    "ext-readline": "*",
+    "ramsey/uuid": "^4.2"
   },
   "autoload": {
     "psr-4": {
-      "Warehouse\\": "app/"
+      "Warehouse\\": "App/"
     }
   }
 }
